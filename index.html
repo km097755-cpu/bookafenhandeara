@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bookafé | Taça de Ice Ninho</title>
+<meta name="description" content="Role a página e a taça de Ice Ninho se abre por partes. Cada parte mostra o cardápio do Bookafé, item por item.">
+<meta name="theme-color" content="#17120f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%2317120f'/%3E%3Ccircle cx='16' cy='11' r='6' fill='%23f3e6d0'/%3E%3Ccircle cx='16' cy='5' r='2.5' fill='%23d11f3a'/%3E%3Cpath d='M7 14h18c0 7-5 10-9 10s-9-3-9-10z' fill='%23ff6a2b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Hanken+Grotesk:wght@400;500;700&display=swap">
+<style>
+:root {
+  --coal: #17120f;
+  --coal-2: #231a15;
+  --cream: #f3e6d0;
+  --ember: #ff6a2b;
+  --muted: #b9a58f;
+  --line: #4a3a2f;
+  --glow: #d11f3a;
+  --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--coal); }
+body { margin: 0; background: var(--coal); color: var(--cream); font: 400 1.0625rem/1.6 var(--font-body); -webkit-text-size-adjust: 100%; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible, li:focus-visible { outline: 3px solid var(--ember); outline-offset: 3px; }
+h1, h2 { font-family: var(--font-display); text-transform: uppercase; line-height: .95; margin: 0; text-wrap: balance; }
+
+/* topo fixo */
+.top { position: fixed; inset: 0 0 auto 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left)); pointer-events: none; }
+.top > * { pointer-events: auto; }
+.logo { font: 900 1.7rem/1 var(--font-display); letter-spacing: .04em; text-transform: uppercase; text-decoration: none; color: var(--cream); }
+.logo b { color: var(--ember); font-weight: 900; }
+.cta { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1.4rem; background: var(--ember); color: #1a0d06;
+  font: 700 1rem var(--font-body); text-decoration: none; border-radius: 999px; box-shadow: 0 8px 28px rgba(255,106,43,.38); transition: transform .15s; }
+.cta:hover { transform: translateY(-2px); }
+.cta.big { min-height: 3.75rem; padding: 0 2.2rem; font-size: 1.2rem; }
+.bar { position: fixed; left: 0; top: 0; height: 3px; width: 100%; z-index: 30; background: var(--ember); transform: scaleX(0); transform-origin: 0 50%; }
+
+/* faixa rolavel: o palco fica fixo e a rolagem comanda tudo */
+.track { position: relative; height: 1100vh; height: 1100svh; }
+.stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; isolation: isolate; }
+.stage::before { content: ""; position: absolute; inset: 0; z-index: -2;
+  background: radial-gradient(55% 60% at var(--gx, 50%) 52%, color-mix(in srgb, var(--glow) 42%, transparent), transparent 72%), radial-gradient(90% 70% at 50% 120%, #2c1d14, transparent 70%); }
+.bg-word { position: absolute; left: 50%; top: 46%; z-index: -1; margin: 0; width: max-content; font: 900 clamp(5.5rem, 27vw, 24rem)/.8 var(--font-display);
+  text-transform: uppercase; letter-spacing: .01em; color: rgba(243,230,208,.085); text-align: center; white-space: nowrap; will-change: transform, opacity; pointer-events: none; }
+.dots-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.dots-bg i { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform; }
+.cup-wrap { position: absolute; inset: 0; will-change: transform; }
+.cup { width: 100%; height: 100%; display: block; overflow: visible; }
+.part { will-change: transform, opacity; }
+
+.intro { position: absolute; left: 50%; bottom: calc(7svh + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(34rem, calc(100% - 32px)); text-align: center; will-change: opacity, transform; }
+.intro h1 { font-size: clamp(2rem, 5.2vw, 3.4rem); font-weight: 900; }
+.intro h1 em { font-style: normal; color: var(--ember); }
+.intro p { margin: .7rem 0 0; color: var(--muted); }
+
+/* cartao de cada grupo do cardapio */
+.card { position: absolute; z-index: 5; top: 50%; width: min(29rem, 42vw); max-height: 90vh; padding: 1.3rem 1.4rem 1.5rem; border: 1px solid var(--line); border-radius: 1.25rem;
+  background: rgba(35,26,21,.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; pointer-events: none; will-change: opacity, transform; }
+.card.left { left: max(32px, 5vw); }
+.card.right { right: max(56px, 6vw); }
+.card.on { pointer-events: auto; }
+.card .hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.card .tag { display: inline-block; margin: 0 0 .6rem; padding: .1rem .7rem; border: 1px solid var(--ember); color: var(--ember); border-radius: 999px; font: 700 .7rem var(--font-body); letter-spacing: .14em; text-transform: uppercase; }
+.card h2 { font-size: clamp(2.2rem, 3.8vw, 3.2rem); font-weight: 900; }
+.card .sub { margin: .35rem 0 0; color: var(--muted); font-size: .85rem; }
+.card .thumb { flex: none; width: 5.4rem; height: 5.4rem; object-fit: cover; border-radius: .9rem; border: 2px solid #c06a2a; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+.feat { margin: 1rem 0 .8rem; padding: .85rem 1rem; border-radius: .9rem; background: rgba(255,106,43,.1); border: 1px solid rgba(255,106,43,.38); min-height: 5.6rem; }
+.feat .top2 { display: flex; justify-content: space-between; align-items: baseline; gap: .8rem; }
+.feat .nm { font: 900 1.9rem/1 var(--font-display); text-transform: uppercase; }
+.feat .pr { font: 700 1.5rem/1 var(--font-display); color: var(--ember); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.feat .pr small { font: 700 .62rem var(--font-body); letter-spacing: .1em; color: var(--muted); margin: 0 .3rem 0 .6rem; }
+.feat .pr small:first-child { margin-left: 0; }
+.feat .ds { margin: .4rem 0 0; color: #e6d6bd; font-size: .98rem; min-height: 1.4em; }
+.feat.swap .nm, .feat.swap .pr, .feat.swap .ds { animation: pop .38s cubic-bezier(.2,.8,.2,1); }
+@keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.rows { list-style: none; margin: 0; padding: 0; }
+.rows li { --f: 0; display: flex; align-items: baseline; gap: .6rem; padding: .32rem .55rem; border-radius: .55rem; font-size: .93rem; cursor: pointer;
+  opacity: calc(.4 + .6 * var(--f)); background: rgba(255,106,43, calc(.16 * var(--f))); translate: calc(var(--f) * 8px) 0; transition: background .2s, opacity .2s; }
+.rows li:hover, .rows li:focus-visible { opacity: 1; background: rgba(255,106,43,.2); }
+.rows .n { font-weight: 700; }
+.rows .d { flex: 1; min-width: .6rem; border-bottom: 2px dotted color-mix(in srgb, var(--ember) calc(var(--f) * 100%), var(--line)); transform: translateY(-.2rem); }
+.rows .v { font: 700 1.05rem var(--font-display); white-space: nowrap; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--ember) calc(40% + var(--f) * 60%), var(--cream)); }
+.rows .v small { font: 700 .58rem var(--font-body); letter-spacing: .08em; color: var(--muted); margin: 0 .25rem 0 .45rem; }
+.rows .v small:first-child { margin-left: 0; }
+.pager { display: none; }
+.card .prog { position: absolute; left: 1.4rem; right: 1.4rem; bottom: .6rem; height: 3px; border-radius: 3px; background: rgba(243,230,208,.12); overflow: hidden; }
+.card .prog::after { content: ""; position: absolute; inset: 0; background: var(--ember); transform: scaleX(var(--pg, 0)); transform-origin: 0 50%; }
+
+.final { position: absolute; left: 50%; bottom: calc(6svh + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(34rem, calc(100% - 32px)); text-align: center; opacity: 0; pointer-events: none; will-change: opacity, transform; }
+.final h2 { font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 900; margin-bottom: .5rem; }
+.final p { margin: 0 0 1rem; color: #e6d6bd; }
+
+.nav { position: absolute; z-index: 6; right: max(16px, 2vw); top: 50%; transform: translateY(-50%); display: grid; gap: 14px; }
+.nav button { width: 14px; height: 14px; padding: 0; border-radius: 50%; border: 2px solid var(--cream); background: transparent; cursor: pointer; opacity: .5; transition: all .25s; position: relative; }
+.nav button::after { content: ""; position: absolute; inset: -10px; }
+.nav button[aria-current="true"] { background: var(--ember); border-color: var(--ember); opacity: 1; transform: scale(1.25); }
+
+footer { padding: 1.5rem max(16px, env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); text-align: center; color: var(--muted); font-size: .9rem; background: var(--coal-2); }
+
+/* celular */
+@media (max-width: 767px) {
+  .logo { font-size: 1.45rem; }
+  .cta { min-height: 2.5rem; padding: 0 1.1rem; font-size: .95rem; }
+  .cup-wrap { inset: 0 0 40% 0; }
+  .card { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 14px !important; right: 14px !important; width: auto; padding: 1rem 1.1rem 1.2rem; }
+  .card h2 { font-size: clamp(1.8rem, 8vw, 2.3rem); }
+  .card .tag { margin-bottom: .4rem; font-size: .64rem; }
+  .card .sub { display: none; }
+  .card .thumb { width: 3.6rem; height: 3.6rem; }
+  .feat { margin: .7rem 0 .5rem; padding: .7rem .85rem; min-height: 5.2rem; }
+  .feat .nm { font-size: 1.55rem; }
+  .feat .pr { font-size: 1.3rem; }
+  .feat .ds { font-size: .92rem; }
+  .rows { display: none; }
+  .pager { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding-bottom: .5rem; }
+  .pager i { width: 8px; height: 8px; border-radius: 50%; background: rgba(243,230,208,.22); transition: all .2s; }
+  .pager i.a { background: var(--ember); transform: scale(1.4); }
+  .card .prog { left: 1.1rem; right: 1.1rem; }
+  .nav { right: 8px; top: 29%; gap: 12px; }
+  .nav button { width: 11px; height: 11px; }
+  .intro { bottom: calc(5svh + env(safe-area-inset-bottom)); }
+  .bg-word { top: 29%; }
+  .final { bottom: calc(14px + env(safe-area-inset-bottom)); }
+}
+@media (max-height: 560px) and (orientation: landscape) { .rows { display: none; } .card .thumb, .card .sub { display: none; } .intro { display: none; } .card { width: min(24rem, 44vw); } .cup-wrap { inset: 0; } }
+@media (prefers-reduced-motion: reduce) { .cta, .nav button, .rows li, .pager i { transition: none; } .feat.swap .nm, .feat.swap .pr, .feat.swap .ds { animation: none; } }
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+
+<header class="top">
+  <a class="logo" href="#" aria-label="Bookafé, voltar ao início">Book<b>afé</b></a>
+  <a class="cta wa" href="#" target="_blank" rel="noopener">Pedir</a>
+</header>
+
+<main>
+  <div class="track" id="track">
+    <div class="stage" id="stage">
+      <div class="dots-bg" id="dots" aria-hidden="true"></div>
+      <p class="bg-word" id="bgword" aria-hidden="true">Ice Ninho</p>
+
+      <div class="cup-wrap" id="cupwrap">
+        <svg class="cup" id="cup" viewBox="0 -260 400 1160" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Taça de Ice Ninho que se abre em seis partes conforme a página rola">
+          <defs>
+            <radialGradient id="gNinho" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#fffaf0"/><stop offset=".55" stop-color="#f3e6d0"/><stop offset="1" stop-color="#d4bb8c"/></radialGradient>
+            <radialGradient id="gL" cx=".35" cy=".3" r=".85"><stop offset="0"/><stop offset=".55"/><stop offset="1"/></radialGradient>
+            <radialGradient id="gC" cx=".35" cy=".3" r=".85"><stop offset="0"/><stop offset=".55"/><stop offset="1"/></radialGradient>
+            <radialGradient id="gR" cx=".35" cy=".3" r=".85"><stop offset="0"/><stop offset=".55"/><stop offset="1"/></radialGradient>
+            <radialGradient id="gCherry" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#ff7488"/><stop offset=".5" stop-color="#d11f3a"/><stop offset="1" stop-color="#6f0c1f"/></radialGradient>
+            <linearGradient id="gCaramel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffa550"/><stop offset="1" stop-color="#c2531a"/></linearGradient>
+            <linearGradient id="gGlass" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity=".38"/><stop offset=".5" stop-color="#ffffff" stop-opacity=".07"/><stop offset="1" stop-color="#ffffff" stop-opacity=".24"/></linearGradient>
+            <clipPath id="bowlClip"><path d="M60 300 C60 392 150 446 200 462 C250 446 340 392 340 300 Z"/></clipPath>
+            <filter id="soft" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+          </defs>
+          <g id="cam">
+            <g class="part" data-i="5">
+              <ellipse cx="200" cy="614" rx="124" ry="12" fill="#000" opacity=".45" filter="url(#soft)"/>
+              <ellipse cx="200" cy="584" rx="104" ry="18" fill="url(#gGlass)" stroke="rgba(243,230,208,.7)" stroke-width="3"/>
+              <ellipse cx="200" cy="570" rx="98" ry="15" fill="rgba(243,230,208,.2)" stroke="rgba(243,230,208,.7)" stroke-width="3"/>
+              <path d="M130 575 C150 583 170 586 190 586" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round" fill="none"/>
+            </g>
+            <g class="part" data-i="4">
+              <path d="M184 458 L216 458 L211 552 L189 552 Z" fill="url(#gGlass)" stroke="rgba(243,230,208,.7)" stroke-width="3" stroke-linejoin="round"/>
+              <ellipse cx="200" cy="502" rx="25" ry="14" fill="url(#gGlass)" stroke="rgba(243,230,208,.7)" stroke-width="3"/>
+              <path d="M193 466 L195 546" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/>
+            </g>
+            <g class="part" data-i="3">
+              <g clip-path="url(#bowlClip)">
+                <rect x="40" y="290" width="320" height="52" fill="#f3e6d0"/>
+                <path d="M40 338 q20 -10 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 V374 H40 Z" fill="url(#gCaramel)"/>
+                <rect x="40" y="372" width="320" height="46" fill="#eedcb4"/>
+                <rect x="40" y="416" width="320" height="70" fill="#7a3f1f"/>
+              </g>
+              <path d="M60 300 C60 392 150 446 200 462 C250 446 340 392 340 300 Z" fill="url(#gGlass)" stroke="rgba(243,230,208,.8)" stroke-width="3" stroke-linejoin="round"/>
+              <ellipse cx="200" cy="300" rx="140" ry="14" fill="rgba(255,255,255,.1)" stroke="rgba(243,230,208,.8)" stroke-width="3"/>
+              <path d="M84 322 C88 372 118 410 152 430" stroke="#fff" stroke-opacity=".55" stroke-width="6" stroke-linecap="round" fill="none"/>
+            </g>
+            <g class="part" data-i="2">
+              <circle id="scoopL" cx="128" cy="252" r="50" fill="url(#gL)"/>
+              <circle id="scoopR" cx="272" cy="252" r="50" fill="url(#gR)"/>
+              <circle cx="200" cy="200" r="60" fill="url(#gC)"/>
+              <g fill="#e0a85a" opacity=".7"><ellipse cx="180" cy="176" rx="5" ry="2.5" transform="rotate(-25 180 176)"/><ellipse cx="226" cy="196" rx="5" ry="2.5" transform="rotate(30 226 196)"/><ellipse cx="196" cy="226" rx="5" ry="2.5" transform="rotate(10 196 226)"/><ellipse cx="108" cy="240" rx="5" ry="2.5" transform="rotate(-30 108 240)"/><ellipse cx="146" cy="266" rx="5" ry="2.5" transform="rotate(20 146 266)"/><ellipse cx="258" cy="236" rx="5" ry="2.5" transform="rotate(-10 258 236)"/><ellipse cx="288" cy="268" rx="5" ry="2.5" transform="rotate(35 288 268)"/></g>
+              <ellipse cx="178" cy="178" rx="16" ry="9" fill="#fff" opacity=".5" transform="rotate(-30 178 178)"/>
+            </g>
+            <g class="part" data-i="1">
+              <ellipse cx="200" cy="134" rx="82" ry="21" fill="url(#gNinho)"/>
+              <ellipse cx="200" cy="116" rx="60" ry="19" fill="url(#gNinho)"/>
+              <ellipse cx="200" cy="101" rx="38" ry="15" fill="url(#gNinho)"/>
+              <path d="M150 112 C172 128 228 128 250 112" stroke="url(#gCaramel)" stroke-width="7" stroke-linecap="round" fill="none"/>
+              <path d="M162 122 v20 M200 128 v26 M238 122 v18" stroke="url(#gCaramel)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            </g>
+            <g class="part" data-i="0">
+              <path d="M200 54 C204 32 226 16 250 10" stroke="#5d7a2d" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <circle cx="200" cy="80" r="27" fill="url(#gCherry)"/>
+              <ellipse cx="191" cy="70" rx="8" ry="4.5" fill="#fff" opacity=".6" transform="rotate(-35 191 70)"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="intro" id="intro">
+        <h1>A taça abre.<br>Você descobre o <em>Bookafé</em>.</h1>
+        <p>Cada parte da taça de Ice Ninho revela o cardápio da casa, item por item.</p>
+      </div>
+
+      <div class="final" id="final">
+        <h2>Sua taça está pronta</h2>
+        <p>Escolha o seu Ice, o seu café ou o seu chocolate e peça pelo WhatsApp.</p>
+        <a class="cta big wa" href="#" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+      </div>
+
+      <nav class="nav" id="nav" aria-label="Grupos do cardápio"></nav>
+    </div>
+  </div>
+</main>
+<footer>Bookafé · Valores em reais · Preços sujeitos a alteração</footer>
+
+<noscript><p style="position:fixed;bottom:0;left:0;right:0;padding:1rem;background:#231a15;text-align:center;z-index:50">Ative o JavaScript para ver a taça abrir e o cardápio do Bookafé.</p></noscript>
+
+<script>
+// TROQUE O NÚMERO: DDI + DDD + número, só dígitos (ex.: 5511999998888).
+var WHATSAPP_NUMBER = "5500000000000";
+var MSG = "Olá, Bookafé! Quero fazer um pedido:\n- Ice: \n- Café, cappuccino ou chocolate: \n- Adicionais: \n- Outros: ";
+var WA = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(MSG);
+document.querySelectorAll("a.wa").forEach(function (a) { a.href = WA; });
+
+// CARDÁPIO (fonte: PDF Cardapio_Bookafe_A4). Cada grupo ocupa uma parte da taça.
+// p = preços: [rótulo do tamanho, valor]. Rótulo vazio = preço único.
+var MENU = [
+  { tag: "A cereja", title: "Adicionais", sub: "Bebidas geladas", photo: "", items: [
+    { n: "Chantilly", p: [["", "R$ 4,00"]], d: "Para dar o toque final no seu Ice." },
+    { n: "Raspas de chocolate", p: [["", "R$ 2,00"]], d: "Para dar o toque final no seu Ice." } ] },
+  { tag: "O chantilly", title: "Para completar", sub: "Bebidas geladas", photo: "", items: [
+    { n: "Vitamina", p: [["", "R$ 14,90"]], d: "Batida na hora." },
+    { n: "Affogato", p: [["", "R$ 14,90"]], d: "Sorvete com café espresso quente por cima." },
+    { n: "Salada de frutas com suco", p: [["", "R$ 15,50"]], d: "Frutas frescas com suco." },
+    { n: "Salada de frutas com sorvete", p: [["", "R$ 18,50"]], d: "Frutas frescas com sorvete." } ] },
+  { tag: "As bolas de sorvete", title: "Ices", sub: "Bebidas geladas", photo: "fotos/ices-da-casa.jpg", items: [
+    { n: "Ice Coffee", p: [["", "R$ 15,00"]], d: "Café, leite e gelo batidos.", c: [201,160,122] },
+    { n: "Ice Cappuccino", p: [["", "R$ 15,00"]], d: "Cappuccino batido com gelo, cremoso.", c: [217,182,143] },
+    { n: "Ice Chocolate", p: [["", "R$ 15,00"]], d: "Chocolate cremoso batido com gelo.", c: [122,74,48] },
+    { n: "Ice Morango", p: [["", "R$ 15,00"]], d: "Sabor morango, cremoso e refrescante.", c: [244,166,184] },
+    { n: "Ice Ninho", p: [["", "R$ 15,00"]], d: "Leite Ninho batido, doce e cremoso.", c: [246,236,210] },
+    { n: "Ice Bombom", p: [["", "R$ 15,00"]], d: "Cremoso, com sabor de bombom.", c: [150,80,70] },
+    { n: "Ice Maracujá", p: [["", "R$ 15,00"]], d: "Sabor maracujá, refrescante.", c: [243,207,85] },
+    { n: "Ice Ovomaltine", p: [["", "R$ 15,00"]], d: "Cremoso, com Ovomaltine.", c: [217,143,58] },
+    { n: "Ice Nutella", p: [["", "R$ 16,00"]], d: "Cremoso, com creme de Nutella.", c: [107,58,34] },
+    { n: "Ice Bookmaline", p: [["", "R$ 16,90"]], d: "Especialidade da casa.", c: [240,182,160] } ] },
+  { tag: "A taça", title: "Cafés", sub: "Bebidas quentes", photo: "fotos/cappuccino-bookafe.jpg", items: [
+    { n: "Café coado", p: [["P", "R$ 3,50"], ["G", "R$ 4,50"]], d: "Passado na hora, no jeito tradicional." },
+    { n: "Espresso", p: [["P", "R$ 5,90"], ["G", "R$ 8,50"]], d: "Extração curta, intensa e encorpada." },
+    { n: "Espresso Nutella", p: [["G", "R$ 11,50"]], d: "Espresso com creme de Nutella." },
+    { n: "Café com leite", p: [["G", "R$ 9,50"]], d: "Café com leite quente." } ] },
+  { tag: "A haste", title: "Cappuccinos", sub: "Bebidas quentes", photo: "fotos/cappuccino-bookafe.jpg", items: [
+    { n: "Cappuccino", p: [["P", "R$ 6,50"], ["G", "R$ 9,50"]], d: "Espresso, leite vaporizado e espuma cremosa." },
+    { n: "Cappuccino Nutella", p: [["G", "R$ 14,90"]], d: "Cappuccino cremoso com Nutella." },
+    { n: "Cappuccino Bookafé", p: [["G", "R$ 16,50"]], d: "Brigadeiro, chantilly e raspas de chocolate." } ] },
+  { tag: "A base", title: "Chocolates", sub: "Bebidas quentes", photo: "fotos/mocha.jpg", items: [
+    { n: "Chocolate quente", p: [["P", "R$ 6,50"], ["G", "R$ 9,50"]], d: "Chocolate quente cremoso." },
+    { n: "Chocolate Bookafé", p: [["G", "R$ 16,50"]], d: "Nossa versão especial da casa." },
+    { n: "Mocha", p: [["G", "R$ 10,50"]], d: "Calda de chocolate, café espresso e leite vaporizado." } ] }
+];
+
+(function () {
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var N = MENU.length, SPREAD = 80;
+  var CENTERS = [60, 118, 226, 380, 502, 574];
+  var FOCUS = CENTERS.map(function (c, i) { return c + (i - 2.5) * SPREAD; });
+  var GLOW = [[255,138,76],[233,199,122],[246,166,184],[127,182,176],[200,140,90],[255,106,43]];
+  // cada grupo ocupa tantas "unidades" de rolagem quantos itens tem (mínimo 3)
+  var W = MENU.map(function (g) { return Math.max(3, g.items.length); });
+  var CUM = [0]; W.forEach(function (w, i) { CUM[i + 1] = CUM[i] + w; });
+  var TOT = CUM[N];
+  var T0 = 0.05, T1 = 0.10, T2 = 0.88, T3 = 0.93;   // introdução, abrir, itens, fechar
+
+  var track = document.getElementById("track"), stage = document.getElementById("stage");
+  var cam = document.getElementById("cam"), cupwrap = document.getElementById("cupwrap");
+  var parts = [];
+  Array.prototype.forEach.call(document.querySelectorAll(".part"), function (p) { parts[+p.dataset.i] = p; });
+  var intro = document.getElementById("intro"), fin = document.getElementById("final");
+  var bgword = document.getElementById("bgword"), bar = document.getElementById("bar");
+  var scoopL = document.getElementById("scoopL"), scoopR = document.getElementById("scoopR");
+  var nav = document.getElementById("nav"), dotsBox = document.getElementById("dots");
+
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function ease(t) { return t * t * (3 - 2 * t); }
+  function isPhone() { return window.innerWidth < 768; }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function priceHtml(p) { return p.map(function (x) { return (x[0] ? "<small>" + x[0] + "</small>" : "") + x[1]; }).join(" "); }
+
+  // ----- cartões: um por grupo, com todos os itens -----
+  var cards = MENU.map(function (g, gi) {
+    var c = document.createElement("article");
+    c.className = "card " + (gi % 2 === 0 ? "left" : "right");
+    c.setAttribute("aria-label", g.title);
+    c.innerHTML =
+      '<div class="hd"><div><span class="tag">' + esc(g.tag) + "</span><h2>" + esc(g.title) + '</h2><p class="sub">' + esc(g.sub) + "</p></div>" +
+      (g.photo ? '<img class="thumb" src="' + g.photo + '" alt="" loading="lazy">' : "") + "</div>" +
+      '<div class="feat"><div class="top2"><span class="nm"></span><span class="pr"></span></div><p class="ds"></p></div>' +
+      '<ul class="rows">' + g.items.map(function (it, k) {
+        return '<li tabindex="0" data-k="' + k + '"><span class="n">' + esc(it.n) + '</span><i class="d"></i><span class="v">' + priceHtml(it.p) + "</span></li>";
+      }).join("") + "</ul>" +
+      '<div class="pager" aria-hidden="true">' + g.items.map(function () { return "<i></i>"; }).join("") + "</div>" +
+      '<i class="prog" aria-hidden="true"></i>';
+    stage.appendChild(c);
+    var o = { el: c, g: g, feat: c.querySelector(".feat"), rows: Array.prototype.slice.call(c.querySelectorAll(".rows li")),
+              dots: Array.prototype.slice.call(c.querySelectorAll(".pager i")), shown: -1, pin: null };
+    // passar o mouse (ou focar) num item mostra esse item em destaque
+    o.rows.forEach(function (li) {
+      var k = +li.dataset.k;
+      li.addEventListener("mouseenter", function () { o.pin = k; });
+      li.addEventListener("focus", function () { o.pin = k; });
+      li.addEventListener("mouseleave", function () { o.pin = null; wake(); });
+      li.addEventListener("blur", function () { o.pin = null; wake(); });
+      li.addEventListener("mouseenter", wake); li.addEventListener("focus", wake);
+    });
+    return o;
+  });
+  function showItem(o, k) {
+    var it = o.g.items[k];
+    o.feat.querySelector(".nm").textContent = it.n;
+    o.feat.querySelector(".pr").innerHTML = priceHtml(it.p);
+    o.feat.querySelector(".ds").textContent = it.d;
+    o.feat.classList.remove("swap"); void o.feat.offsetWidth; if (!reduce) o.feat.classList.add("swap");
+    o.dots.forEach(function (d, q) { d.classList.toggle("a", q === k); });
+    o.shown = k;
+  }
+
+  // ----- navegação lateral -----
+  var navBtns = [];
+  for (var i = 0; i < N; i++) {
+    var b = document.createElement("button");
+    b.type = "button"; b.setAttribute("aria-label", MENU[i].title); b.dataset.i = i;
+    b.addEventListener("click", function () { goTo(+this.dataset.i); });
+    nav.appendChild(b); navBtns.push(b);
+  }
+  function range() { return track.offsetHeight - window.innerHeight; }
+  function trackTop() { return track.getBoundingClientRect().top + window.scrollY; }
+  function goTo(i) {
+    var P = T1 + ((CUM[i] + 0.35) / TOT) * (T2 - T1);
+    window.scrollTo({ top: trackTop() + P * range(), behavior: reduce ? "auto" : "smooth" });
+  }
+
+  // ----- bolinhas de fundo -----
+  var dots = [], count = isPhone() ? 12 : 22, tones = ["rgba(243,230,208,.55)", "rgba(255,106,43,.6)", "rgba(243,230,208,.3)"];
+  for (i = 0; i < count; i++) {
+    var d = document.createElement("i"), size = 4 + Math.random() * 14, depth = .25 + Math.random() * 1.1;
+    d.style.width = d.style.height = size + "px"; d.style.background = tones[i % 3]; d.style.opacity = (.25 + depth * .35).toFixed(2);
+    if (depth > 1) d.style.filter = "blur(1.5px)";
+    dotsBox.appendChild(d); dots.push({ el: d, x: Math.random(), y: Math.random(), depth: depth });
+  }
+
+  // ----- cor das bolas de sorvete: cada item da lista de Ices muda o sabor -----
+  var CREAM = [246,236,210], FL = MENU[2].items.map(function (it) { return it.c; });
+  var stops = { L: document.querySelectorAll("#gL stop"), C: document.querySelectorAll("#gC stop"), R: document.querySelectorAll("#gR stop") };
+  function mix(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; }
+  function rgb(c) { return "rgb(" + Math.round(c[0]) + "," + Math.round(c[1]) + "," + Math.round(c[2]) + ")"; }
+  function paint(set, base) {
+    set[0].setAttribute("stop-color", rgb(mix(base, [255,255,255], 0.55)));
+    set[1].setAttribute("stop-color", rgb(base));
+    set[2].setAttribute("stop-color", rgb(mix(base, [40,20,10], 0.28)));
+  }
+  function flavorAt(pos) {   // pos contínuo entre 0 e (n-1)
+    pos = clamp(pos, 0, FL.length - 1);
+    var k = Math.floor(pos), t = ease(pos - k);
+    return mix(FL[k], FL[Math.min(FL.length - 1, k + 1)], t);
+  }
+
+  var target = 0, cur = 0, running = false, last = -9;
+  function wake() { if (!running) { running = true; requestAnimationFrame(loop); } }
+  function readTarget() { var r = range(); target = r > 0 ? clamp((window.scrollY - trackTop()) / r, 0, 1) : 0; wake(); }
+
+  function render(P, vel) {
+    var phone = isPhone();
+    var o = ease(clamp((P - T0) / (T1 - T0), 0, 1)) * (1 - ease(clamp((P - T2) / (T3 - T2), 0, 1)));
+    var u = clamp((P - T1) / (T2 - T1), 0, 1) * TOT;
+    var g = 0; while (g < N - 1 && u >= CUM[g + 1]) g++;
+    var q = u - CUM[g], rem = CUM[g + 1] - u;           // posição dentro do grupo, unidades que faltam
+    var move = g < N - 1 ? ease(clamp(1 - rem / 0.7, 0, 1)) : 0;
+    var f = g + move;
+    var fl = Math.floor(f), fc = Math.min(N - 1, fl + 1), ft = f - fl;
+    var focusY = lerp(FOCUS[fl], FOCUS[fc], ft);
+    var side = lerp(fl % 2 === 0 ? 1 : -1, fc % 2 === 0 ? 1 : -1, ft);
+
+    for (var k = 0; k < parts.length; k++) {
+      var dy = (k - 2.5) * SPREAD * o, w = clamp(1 - Math.abs(f - k) * 1.4, 0, 1);
+      var op = lerp(1, 0.2 + 0.8 * w, o), sc = lerp(1, 1 + 0.06 * w, o), cy = CENTERS[k];
+      parts[k].style.transform = "translate(0px," + dy.toFixed(2) + "px) translate(200px," + cy + "px) scale(" + sc.toFixed(3) + ") translate(-200px," + (-cy) + "px)";
+      parts[k].style.opacity = op.toFixed(3);
+    }
+    var splay = 46 * o * (0.55 + 0.45 * clamp(1 - Math.abs(f - 2) * 1.2, 0, 1));
+    scoopL.setAttribute("transform", "translate(" + (-splay).toFixed(1) + " " + (splay * 0.15).toFixed(1) + ")");
+    scoopR.setAttribute("transform", "translate(" + splay.toFixed(1) + " " + (splay * 0.15).toFixed(1) + ")");
+
+    // sabores: bola do meio = item ativo, laterais = vizinhos
+    var inIce = g === 2 && o > 0;
+    var pos = inIce ? q - 0.5 : -9;
+    var wIce = inIce ? 1 : 0;
+    var cC = inIce ? flavorAt(pos) : CREAM, cL = inIce ? flavorAt(pos - 1) : CREAM, cR = inIce ? flavorAt(pos + 1) : CREAM;
+    paint(stops.C, cC); paint(stops.L, cL); paint(stops.R, cR);
+
+    var zoom = lerp(phone ? 1.3 : 1.15, phone ? 2.2 : 2.1, o), py = lerp(phone ? 330 : 440, focusY, o);
+    var tilt = reduce ? 0 : clamp(vel * 90, -5, 5);
+    cam.setAttribute("transform", "translate(200 320) rotate(" + tilt.toFixed(2) + ") scale(" + zoom.toFixed(3) + ") translate(-200 " + (-py).toFixed(1) + ")");
+    cupwrap.style.transform = phone ? "none" : "translateX(" + (side * 15 * o).toFixed(2) + "vw)";
+
+    bgword.style.transform = "translate(-50%,-50%) translateY(" + (-P * 700).toFixed(0) + "px) scale(" + (1 + P * 1.2).toFixed(3) + ")";
+    bgword.style.opacity = (1 - o).toFixed(3);
+    var iv = 1 - clamp(P / 0.04, 0, 1);
+    intro.style.opacity = iv.toFixed(3);
+    intro.style.transform = "translateX(-50%) translateY(" + ((1 - iv) * 30).toFixed(1) + "px)";
+    var fv = ease(clamp((P - 0.94) / 0.04, 0, 1));
+    fin.style.opacity = fv.toFixed(3);
+    fin.style.transform = "translateX(-50%) translateY(" + ((1 - fv) * 30).toFixed(1) + "px)";
+    fin.style.pointerEvents = fv > 0.5 ? "auto" : "none";
+
+    // cartões e itens
+    for (k = 0; k < N; k++) {
+      var c = cards[k], cv = 0;
+      if (o > 0 && k === g) cv = clamp(Math.min(q / 0.45, rem / 0.45), 0, 1);
+      var dir = k % 2 === 0 ? -1 : 1;
+      c.el.style.opacity = cv.toFixed(3);
+      c.el.style.transform = phone ? "translateY(" + ((1 - cv) * 24).toFixed(1) + "px)" : "translateY(-50%) translateX(" + (dir * (1 - cv) * 30).toFixed(1) + "px)";
+      c.el.classList.toggle("on", cv > 0.5);
+      c.el.setAttribute("aria-hidden", cv > 0.3 ? "false" : "true");
+      if (cv > 0) {
+        var n = c.g.items.length, act = clamp(Math.floor(q), 0, n - 1);
+        c.el.style.setProperty("--pg", clamp(q / W[k], 0, 1).toFixed(3));
+        for (var r = 0; r < n; r++) c.rows[r].style.setProperty("--f", ease(clamp(1 - Math.abs(q - (r + 0.5)), 0, 1)).toFixed(3));
+        var want = c.pin !== null ? c.pin : act;
+        if (want !== c.shown) showItem(c, want);
+        if (c.pin === null) c.dots.forEach(function (dd, z) { dd.classList.toggle("a", z === act); });
+      }
+    }
+    var a = GLOW[fl], c2 = GLOW[fc];
+    var gl = [0, 1, 2].map(function (z) { return Math.round(lerp(a[z], c2[z], ft)); });
+    stage.style.setProperty("--glow", "rgb(" + gl.join(",") + ")");
+    stage.style.setProperty("--gx", phone ? "50%" : (50 + side * 15 * o).toFixed(1) + "%");
+
+    var active = o > 0.5 ? g : -1;
+    if (active !== last) {
+      navBtns.forEach(function (bt, z) { if (z === active) bt.setAttribute("aria-current", "true"); else bt.removeAttribute("aria-current"); });
+      last = active;
+    }
+    bar.style.transform = "scaleX(" + clamp(window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight), 0, 1).toFixed(4) + ")";
+  }
+
+  var H = stage.clientHeight || window.innerHeight, W2 = stage.clientWidth || window.innerWidth;
+  function moveDots() {
+    if (reduce) return;
+    var sy = window.scrollY;
+    for (var z = 0; z < dots.length; z++) {
+      var p = dots[z], y = (((p.y * H - sy * p.depth * 0.35) % (H + 40)) + (H + 40)) % (H + 40) - 20;
+      p.el.style.transform = "translate3d(" + (p.x * W2 + Math.sin(sy * 0.002 * p.depth + z) * 14).toFixed(1) + "px," + y.toFixed(1) + "px,0)";
+    }
+  }
+  function loop() {
+    cur = reduce ? target : cur + (target - cur) * 0.14;
+    if (Math.abs(target - cur) < 0.00008) cur = target;
+    render(cur, cur - target); moveDots();
+    if (cur !== target) requestAnimationFrame(loop); else running = false;
+  }
+
+  window.addEventListener("scroll", readTarget, { passive: true });
+  window.addEventListener("resize", function () { H = stage.clientHeight; W2 = stage.clientWidth; last = -9; readTarget(); });
+  readTarget(); cur = target; render(cur, 0); moveDots();
+})();
+</script>
+</body>
+</html>
