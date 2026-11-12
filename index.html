@@ -54,9 +54,11 @@ h1, h2 { font-family: var(--font-display); text-transform: uppercase; line-heigh
 .brand-wrap { position: absolute; inset: 0; display: grid; place-items: center; perspective: 1400px; will-change: transform; }
 /* logo só em traço (livro, xícara e nome), sem fundo; frente e verso iguais: ao girar nunca aparece espelhada */
 .brand { position: relative; width: min(64vmin, 30rem); aspect-ratio: 932 / 602; transform-style: preserve-3d; will-change: transform; }
-.brand img { position: absolute; inset: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  filter: drop-shadow(0 10px 28px rgba(0,0,0,.6)); }
-.brand img + img { transform: rotateY(180deg); }
+.brand .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.brand .face + .face { transform: rotateY(180deg); }
+.brand img { display: block; width: 100%; height: 100%; filter: drop-shadow(0 10px 28px rgba(0,0,0,.6)); }
+.brand .city { position: absolute; left: 0; right: 0; top: 100%; margin-top: .5em; text-align: center; white-space: nowrap;
+  font: 700 clamp(.95rem, 2.4vmin, 1.35rem)/1 var(--font-body); letter-spacing: .22em; color: var(--cream); opacity: .85; text-shadow: 0 2px 12px rgba(0,0,0,.6); }
 
 .intro { position: absolute; left: 50%; bottom: calc(7svh + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(34rem, calc(100% - 32px)); text-align: center; will-change: opacity, transform; }
 .intro h1 { font-size: clamp(2rem, 5.2vw, 3.4rem); font-weight: 900; }
@@ -170,9 +172,9 @@ footer { padding: 1.5rem max(16px, env(safe-area-inset-right)) calc(1.5rem + env
       <p class="bg-word" id="bgword" aria-hidden="true">Cardápio</p>
 
       <div class="brand-wrap" id="brandwrap">
-        <div class="brand" id="brand" role="img" aria-label="Logo do Bookafé">
-          <img src="fotos/logo-bookafe-linha.png" alt="" width="932" height="602">
-          <img src="fotos/logo-bookafe-linha.png" alt="" width="932" height="602">
+        <div class="brand" id="brand" role="img" aria-label="Logo do Bookafé, Nhandeara-SP">
+          <div class="face"><img src="fotos/logo-bookafe-linha.png" alt="" width="932" height="602"><span class="city">Nhandeara-SP</span></div>
+          <div class="face"><img src="fotos/logo-bookafe-linha.png" alt="" width="932" height="602"><span class="city">Nhandeara-SP</span></div>
         </div>
       </div>
 
