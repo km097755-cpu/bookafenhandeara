@@ -2,7 +2,7 @@
 
 Atualizado em 12/11/2026 (versão 4: a taça de Ice Ninho saiu, a logo do Bookafé entrou no lugar).
 
-Página única (`index.html` + pasta `fotos`). A logo (`fotos/logo-bookafe.png`, recortada da imagem enviada em 12/11, cantos transparentes) fica no centro. Conforme a pessoa rola, o cardápio aparece em seis grupos e, dentro de cada um, a rolagem passa item por item (nome, preço e descrição em destaque). A taça antiga está guardada no commit anterior do repo GitHub.
+Página única (`index.html` + pasta `fotos`). A logo fica no centro: só o traço do livro com a xícara e o nome BooKafé, em creme, sem fundo (`fotos/logo-bookafe-linha.png`, tirada da logo preta e branca enviada em 12/11; o fundo branco virou transparente). A logo vermelha (`fotos/logo-bookafe.png`) ficou só como ícone da aba. Conforme a pessoa rola, o cardápio aparece em seis grupos e, dentro de cada um, a rolagem passa item por item (nome, preço e descrição em destaque). A taça antiga está guardada no commit anterior do repo GitHub.
 
 ## Fonte do conteúdo
 PDF `Cardapio_Bookafe_A4.pdf` (duas páginas, enviadas como imagem em 11/11/2026): 26 produtos com descrição e preço. Fotos recortadas dessas imagens (baixa resolução). A lista fica no começo do script (`MENU`): é só editar lá para mudar item, preço ou descrição.

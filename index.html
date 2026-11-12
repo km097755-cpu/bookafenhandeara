@@ -52,10 +52,10 @@ h1, h2 { font-family: var(--font-display); text-transform: uppercase; line-heigh
 .dots-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .dots-bg i { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform; }
 .brand-wrap { position: absolute; inset: 0; display: grid; place-items: center; perspective: 1400px; will-change: transform; }
-/* logo com frente e verso iguais: ao girar nunca aparece espelhada */
-.brand { position: relative; width: min(44vmin, 22rem); aspect-ratio: 1; transform-style: preserve-3d; will-change: transform; }
-.brand img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 8.3%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(243,230,208,.1); }
+/* logo só em traço (livro, xícara e nome), sem fundo; frente e verso iguais: ao girar nunca aparece espelhada */
+.brand { position: relative; width: min(64vmin, 30rem); aspect-ratio: 932 / 602; transform-style: preserve-3d; will-change: transform; }
+.brand img { position: absolute; inset: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  filter: drop-shadow(0 10px 28px rgba(0,0,0,.6)); }
 .brand img + img { transform: rotateY(180deg); }
 
 .intro { position: absolute; left: 50%; bottom: calc(7svh + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(34rem, calc(100% - 32px)); text-align: center; will-change: opacity, transform; }
@@ -130,7 +130,7 @@ footer { padding: 1.5rem max(16px, env(safe-area-inset-right)) calc(1.5rem + env
   .logo { font-size: 1.45rem; }
   .cta { min-height: 2.5rem; padding: 0 1.1rem; font-size: .95rem; }
   .brand-wrap { inset: 0 0 40% 0; }
-  .brand { width: min(62vw, 17rem); }
+  .brand { width: min(84vw, 21rem); }
   .card { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 14px !important; right: 14px !important; width: auto; padding: 1rem 1.1rem 1.2rem; }
   .card h2 { font-size: clamp(1.8rem, 8vw, 2.3rem); }
   .card .tag { margin-bottom: .4rem; font-size: .64rem; }
@@ -171,8 +171,8 @@ footer { padding: 1.5rem max(16px, env(safe-area-inset-right)) calc(1.5rem + env
 
       <div class="brand-wrap" id="brandwrap">
         <div class="brand" id="brand" role="img" aria-label="Logo do Bookafé">
-          <img src="fotos/logo-bookafe.png" alt="" width="480" height="481">
-          <img src="fotos/logo-bookafe.png" alt="" width="480" height="481">
+          <img src="fotos/logo-bookafe-linha.png" alt="" width="932" height="602">
+          <img src="fotos/logo-bookafe-linha.png" alt="" width="932" height="602">
         </div>
       </div>
 
