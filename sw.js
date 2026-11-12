@@ -1,6 +1,6 @@
 // Service worker do app Cardápio: abre sem internet depois da primeira visita.
 // Mudou o site? Aumente a versão abaixo para limpar o que ficou guardado.
-var VERSAO = "cardapio-v1";
+var VERSAO = "cardapio-v2";
 var BASE = ["./", "index.html", "manifest.webmanifest", "fotos/logo-bookafe-linha.png", "fotos/logo-bookafe.png", "fotos/ices-da-casa.jpg",
   "fotos/cappuccino-bookafe.jpg", "fotos/mocha.jpg", "fotos/icone-192.png", "fotos/icone-512.png", "fotos/icone-512-maskable.png", "fotos/icone-apple-180.png"];
 
@@ -27,7 +27,7 @@ self.addEventListener("fetch", function (e) {
   }
   if (ehPagina) {
     // a página: tenta a internet (cardápio sempre atual); sem internet, usa o guardado
-    e.respondWith(fetch(req).then(function (r) { var cp = r.clone(); caches.open(VERSAO).then(function (c) { c.put("index.html", cp); }); return r; })
+    e.respondWith(fetch(req.url, { cache: "no-cache" }).then(function (r) { var cp = r.clone(); caches.open(VERSAO).then(function (c) { c.put("index.html", cp); }); return r; })
       .catch(function () { return caches.match("index.html"); }));
     return;
   }
