@@ -75,7 +75,6 @@ h1, h2 { font-family: var(--font-display); text-transform: uppercase; line-heigh
 .how .fechar { display: flex; width: 100%; margin-top: 1.3rem; border: 0; cursor: pointer; }
 /* como chegar */
 .cta.alt { background: transparent; color: var(--cream); border: 1.5px solid rgba(243,230,208,.55); box-shadow: none; }
-.final .btns { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; }
 .how.chegar { width: min(94vw, 30rem); }
 .how .mapa { display: block; width: 100%; aspect-ratio: 4 / 3; margin: .8rem 0 .2rem; border: 1px solid var(--line); border-radius: .9rem; background: var(--coal); }
 .how .rotas { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .55rem; margin-top: .9rem; }
@@ -242,7 +241,7 @@ footer { padding: 1.5rem max(16px, env(safe-area-inset-right)) calc(1.5rem + env
       <div class="final" id="final">
         <h2>Já escolheu o seu?</h2>
         <p>Escolha o seu Ice, o seu café ou o seu chocolate e peça pelo WhatsApp.</p>
-        <div class="btns"><a class="cta big wa" href="#" target="_blank" rel="noopener">Pedir pelo WhatsApp</a><a class="cta big alt" id="chegarFinal" href="#" role="button">Como chegar</a></div>
+        <a class="cta big wa" href="#" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
       </div>
 
       <nav class="nav" id="nav" aria-label="Grupos do cardápio"></nav>
@@ -319,7 +318,6 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
   dlg.addEventListener("click", function (e) { if (e.target === dlg || e.target.closest(".fechar")) fecha(); });
   dlg.addEventListener("close", function () { document.documentElement.style.overflow = ""; });
   document.getElementById("chegar").addEventListener("click", abre);
-  document.getElementById("chegarFinal").addEventListener("click", abre);
 })();
 
 // MENU ⋮: compartilhar o endereço público do cardápio e abrir o Instagram
