@@ -56,11 +56,23 @@ h1, h2 { font-family: var(--font-display); text-transform: uppercase; line-heigh
   background: var(--coal-2); box-shadow: 0 18px 50px rgba(0,0,0,.6); }
 .more-menu[hidden] { display: none; }
 .more-menu a { display: flex; align-items: center; gap: .8rem; padding: .85rem .9rem; border-radius: .7rem; text-decoration: none; font-weight: 500; line-height: 1.25; }
-.more-menu a + a { margin-top: .35rem; position: relative; }
-.more-menu a + a::before { content: ""; position: absolute; left: .9rem; right: .9rem; top: -.2rem; border-top: 1px solid var(--line); }
+.more-menu a[hidden] { display: none; }
+.more-menu a:not([hidden]) ~ a:not([hidden]) { margin-top: .35rem; position: relative; }
+.more-menu a:not([hidden]) ~ a:not([hidden])::before { content: ""; position: absolute; left: .9rem; right: .9rem; top: -.2rem; border-top: 1px solid var(--line); }
 .more-menu a:hover, .more-menu a:focus-visible { background: rgba(255,106,43,.14); }
 .more-menu svg { flex: none; width: 1.35rem; height: 1.35rem; color: var(--ember); }
 .more-menu small { display: block; color: var(--muted); font-size: .8rem; }
+/* janela "como instalar" */
+.how { width: min(92vw, 26rem); max-height: 88vh; max-height: 88svh; padding: 0; border: 1px solid var(--line); border-radius: 1.25rem; background: var(--coal-2); color: var(--cream); overflow: auto; }
+.how::backdrop { background: rgba(12,9,7,.8); }
+.how .in { padding: 1.3rem 1.3rem 1.4rem; }
+.how h2 { font-size: 2rem; font-weight: 900; margin-bottom: .3rem; }
+.how .lead { margin: 0 0 .5rem; color: var(--muted); font-size: .95rem; }
+.how h3 { margin: 1.1rem 0 .4rem; font: 700 .72rem var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ember); }
+.how ol { margin: 0; padding-left: 1.25rem; }
+.how li { margin: .3rem 0; }
+.how li svg { display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -.15em; color: var(--ember); }
+.how .fechar { display: flex; width: 100%; margin-top: 1.3rem; border: 0; cursor: pointer; }
 .bar { position: fixed; left: 0; top: 0; height: 3px; width: 100%; z-index: 30; background: var(--ember); transform: scaleX(0); transform-origin: 0 50%; }
 
 /* faixa rolavel: o palco fica fixo e a rolagem comanda tudo */
@@ -190,6 +202,7 @@ footer { padding: 1.5rem max(16px, env(safe-area-inset-right)) calc(1.5rem + env
     <div class="more">
       <button type="button" class="more-btn" id="moreBtn" aria-label="Mais opções" aria-expanded="false" aria-controls="moreMenu"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
       <div class="more-menu" id="moreMenu" hidden>
+        <a id="instalar" href="#" role="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7.5v6M9.5 11.5l2.5 2.5 2.5-2.5M10 18h4"/></svg><span>Instalar o app<small>Android e iPhone</small></span></a>
         <a id="shareWa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3.6 20.4l1.3-4.1a8.6 8.6 0 1 1 3.1 3z"/><path d="M8.8 8.3c.2-.6.6-.9 1-.9h.6l1 2.2-.8.9c.5 1.1 1.4 2 2.5 2.5l.9-.8 2.2 1v.6c0 .4-.3.8-.9 1-2.9.8-7.3-3.6-6.5-6.5z" fill="currentColor" stroke="none"/></svg><span>Compartilhar no WhatsApp<small>Envie o cardápio para alguém</small></span></a>
         <a href="https://www.instagram.com/bookafe_nhandeara/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg><span>Instagram<small>@bookafe_nhandeara</small></span></a>
       </div>
@@ -235,6 +248,34 @@ var WHATSAPP_NUMBER = "5517981131409";
 var MSG = "Olá, Bookafé! Quero fazer um pedido.";
 var WA = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(MSG);
 document.querySelectorAll("a.wa").forEach(function (a) { a.href = WA; });
+
+// INSTALAR O APP: Android abre o pedido de instalação do navegador; iPhone e demais mostram o passo a passo
+(function () {
+  var item = document.getElementById("instalar");
+  if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true) { item.hidden = true; return; }
+  var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var pedido = null;
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); pedido = e; });
+  window.addEventListener("appinstalled", function () { pedido = null; item.hidden = true; });
+  var SHARE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
+  var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+  var passosIos = '<h3>iPhone (Safari)</h3><ol><li>Abra este endereço no <b>Safari</b>.</li><li>Toque em <b>Compartilhar</b> ' + SHARE + ' (na barra de baixo).</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li></ol>';
+  var passosAnd = '<h3>Android (Chrome)</h3><ol><li>Abra este endereço no <b>Chrome</b>.</li><li>Toque nos <b>3 pontinhos</b> ' + DOTS + ' do navegador.</li><li>Escolha <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li><li>Confirme em <b>Instalar</b>.</li></ol>';
+  var how = document.createElement("dialog");
+  how.className = "how"; how.setAttribute("aria-label", "Como instalar o app");
+  how.innerHTML = '<div class="in"><h2>Instalar o app Cardápio</h2><p class="lead">O ícone fica na tela inicial do celular e o cardápio abre em tela cheia.</p>' +
+    (ios ? passosIos + passosAnd : passosAnd + passosIos) + '<button type="button" class="cta fechar">Entendi</button></div>';
+  document.body.appendChild(how);
+  function fecha() { if (how.close) how.close(); else how.removeAttribute("open"); }
+  how.addEventListener("click", function (e) { if (e.target === how || e.target.closest(".fechar")) fecha(); });
+  how.addEventListener("close", function () { document.documentElement.style.overflow = ""; });
+  item.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (pedido) { var p = pedido; pedido = null; p.prompt(); return; }
+    document.documentElement.style.overflow = "hidden";
+    if (how.showModal) how.showModal(); else how.setAttribute("open", "");
+  });
+})();
 
 // APP: registra o service worker (abrir sem internet e instalar na tela inicial)
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
