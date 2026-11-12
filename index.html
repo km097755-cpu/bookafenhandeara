@@ -6,6 +6,12 @@
 <title>Bookafé | Cardápio</title>
 <meta name="description" content="Role a página e descubra o cardápio do Bookafé, item por item: ices, cafés, cappuccinos e chocolates.">
 <meta name="theme-color" content="#17120f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="fotos/icone-apple-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cardápio">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="fotos/logo-bookafe.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -229,6 +235,11 @@ var WHATSAPP_NUMBER = "5517981131409";
 var MSG = "Olá, Bookafé! Quero fazer um pedido.";
 var WA = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(MSG);
 document.querySelectorAll("a.wa").forEach(function (a) { a.href = WA; });
+
+// APP: registra o service worker (abrir sem internet e instalar na tela inicial)
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+}
 
 // MENU ⋮: compartilhar o endereço público do cardápio e abrir o Instagram
 var SITE_URL = "https://km097755-cpu.github.io/bookafenhandeara/";
