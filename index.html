@@ -40,6 +40,21 @@ h1, h2 { font-family: var(--font-display); text-transform: uppercase; line-heigh
   font: 700 1rem var(--font-body); text-decoration: none; border-radius: 999px; box-shadow: 0 8px 28px rgba(255,106,43,.38); transition: transform .15s; }
 .cta:hover { transform: translateY(-2px); }
 .cta.big { min-height: 3.75rem; padding: 0 2.2rem; font-size: 1.2rem; }
+/* menu de três pontinhos: compartilhar no WhatsApp e Instagram */
+.acts { display: flex; align-items: center; gap: .6rem; }
+.more { position: relative; }
+.more-btn { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: rgba(35,26,21,.85);
+  color: var(--cream); cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.more-btn svg { width: 1.3rem; height: 1.3rem; }
+.more-menu { position: absolute; right: 0; top: calc(100% + 10px); display: grid; min-width: 16.5rem; padding: .35rem; border: 1px solid var(--line); border-radius: 1rem;
+  background: var(--coal-2); box-shadow: 0 18px 50px rgba(0,0,0,.6); }
+.more-menu[hidden] { display: none; }
+.more-menu a { display: flex; align-items: center; gap: .8rem; padding: .85rem .9rem; border-radius: .7rem; text-decoration: none; font-weight: 500; line-height: 1.25; }
+.more-menu a + a { margin-top: .35rem; position: relative; }
+.more-menu a + a::before { content: ""; position: absolute; left: .9rem; right: .9rem; top: -.2rem; border-top: 1px solid var(--line); }
+.more-menu a:hover, .more-menu a:focus-visible { background: rgba(255,106,43,.14); }
+.more-menu svg { flex: none; width: 1.35rem; height: 1.35rem; color: var(--ember); }
+.more-menu small { display: block; color: var(--muted); font-size: .8rem; }
 .bar { position: fixed; left: 0; top: 0; height: 3px; width: 100%; z-index: 30; background: var(--ember); transform: scaleX(0); transform-origin: 0 50%; }
 
 /* faixa rolavel: o palco fica fixo e a rolagem comanda tudo */
@@ -131,6 +146,8 @@ footer { padding: 1.5rem max(16px, env(safe-area-inset-right)) calc(1.5rem + env
 @media (max-width: 767px) {
   .logo { font-size: 1.45rem; }
   .cta { min-height: 2.5rem; padding: 0 1.1rem; font-size: .95rem; }
+  .more-btn { width: 2.5rem; height: 2.5rem; }
+  .acts { gap: .45rem; }
   .brand-wrap { inset: 0 0 40% 0; }
   .brand { width: min(84vw, 21rem); }
   .card { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 14px !important; right: 14px !important; width: auto; padding: 1rem 1.1rem 1.2rem; }
@@ -162,7 +179,16 @@ footer { padding: 1.5rem max(16px, env(safe-area-inset-right)) calc(1.5rem + env
 
 <header class="top">
   <a class="logo" href="#" aria-label="Bookafé, voltar ao início">Book<b>afé</b></a>
-  <a class="cta wa" href="#" target="_blank" rel="noopener">Pedir</a>
+  <div class="acts">
+    <a class="cta wa" href="#" target="_blank" rel="noopener">Pedir</a>
+    <div class="more">
+      <button type="button" class="more-btn" id="moreBtn" aria-label="Mais opções" aria-expanded="false" aria-controls="moreMenu"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+      <div class="more-menu" id="moreMenu" hidden>
+        <a id="shareWa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3.6 20.4l1.3-4.1a8.6 8.6 0 1 1 3.1 3z"/><path d="M8.8 8.3c.2-.6.6-.9 1-.9h.6l1 2.2-.8.9c.5 1.1 1.4 2 2.5 2.5l.9-.8 2.2 1v.6c0 .4-.3.8-.9 1-2.9.8-7.3-3.6-6.5-6.5z" fill="currentColor" stroke="none"/></svg><span>Compartilhar no WhatsApp<small>Envie o cardápio para alguém</small></span></a>
+        <a href="https://www.instagram.com/bookafe_nhandeara/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg><span>Instagram<small>@bookafe_nhandeara</small></span></a>
+      </div>
+    </div>
+  </div>
 </header>
 
 <main>
@@ -203,6 +229,18 @@ var WHATSAPP_NUMBER = "5517981131409";
 var MSG = "Olá, Bookafé! Quero fazer um pedido.";
 var WA = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(MSG);
 document.querySelectorAll("a.wa").forEach(function (a) { a.href = WA; });
+
+// MENU ⋮: compartilhar o endereço público do cardápio e abrir o Instagram
+var SITE_URL = "https://km097755-cpu.github.io/bookafenhandeara/";
+document.getElementById("shareWa").href = "https://wa.me/?text=" + encodeURIComponent("Confira o cardápio do Bookafé: " + SITE_URL);
+(function () {
+  var btn = document.getElementById("moreBtn"), menu = document.getElementById("moreMenu");
+  function setMenu(open) { menu.hidden = !open; btn.setAttribute("aria-expanded", open ? "true" : "false"); }
+  btn.addEventListener("click", function (e) { e.stopPropagation(); setMenu(menu.hidden); });
+  menu.addEventListener("click", function (e) { e.stopPropagation(); if (e.target.closest("a")) setMenu(false); });
+  document.addEventListener("click", function () { if (!menu.hidden) setMenu(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !menu.hidden) { setMenu(false); btn.focus(); } });
+})();
 
 // CARDÁPIO (fonte: PDF Cardapio_Bookafe_A4). Cada grupo ocupa um trecho da rolagem.
 // p = preços: [rótulo do tamanho, valor]. Rótulo vazio = preço único.
