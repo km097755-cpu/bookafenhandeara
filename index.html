@@ -65,7 +65,7 @@ h1, h2 { font-family: var(--font-display); text-transform: uppercase; line-heigh
 .bg-word { position: absolute; left: 50%; top: 46%; z-index: -1; margin: 0; width: max-content; font: 900 clamp(5.5rem, 27vw, 24rem)/.8 var(--font-display);
   text-transform: uppercase; letter-spacing: .01em; color: rgba(243,230,208,.085); text-align: center; white-space: nowrap; will-change: transform, opacity; pointer-events: none; }
 .dots-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-.dots-bg i { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform; }
+.dots-bg i { position: absolute; left: 0; top: 0; background: center / contain no-repeat; will-change: transform; }
 .brand-wrap { position: absolute; inset: 0; display: grid; place-items: center; perspective: 1400px; will-change: transform; }
 /* logo só em traço (livro, xícara e nome), sem fundo; frente e verso iguais: ao girar nunca aparece espelhada */
 .brand { position: relative; width: min(64vmin, 30rem); aspect-ratio: 932 / 602; transform-style: preserve-3d; will-change: transform; }
@@ -377,13 +377,19 @@ var MENU = [
     window.scrollTo({ top: trackTop() + P * range(), behavior: reduce ? "auto" : "smooth" });
   }
 
-  // ----- bolinhas de fundo -----
-  var dots = [], count = isPhone() ? 12 : 22, tones = ["rgba(243,230,208,.55)", "rgba(255,106,43,.6)", "rgba(243,230,208,.3)"];
+  // ----- grãos de café no fundo -----
+  function bean(body, groove) {
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="' + body + '"/>' +
+      '<path d="M10.5 2.5C6.5 8 14 11 10 14s-3.5 6.5.5 11.5" stroke="' + groove + '" stroke-width="2.2" fill="none" stroke-linecap="round"/>' +
+      '<ellipse cx="6" cy="9" rx="1.8" ry="4.2" fill="#fff" opacity=".2" transform="rotate(12 6 9)"/></svg>';
+    return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+  }
+  var dots = [], count = isPhone() ? 12 : 22, tones = [bean("#7a4426", "#2b140a"), bean("#5a2f1a", "#1f0e06"), bean("#9a5a30", "#3a1d0e")];
   for (i = 0; i < count; i++) {
-    var d = document.createElement("i"), size = 4 + Math.random() * 14, depth = .25 + Math.random() * 1.1;
-    d.style.width = d.style.height = size + "px"; d.style.background = tones[i % 3]; d.style.opacity = (.25 + depth * .35).toFixed(2);
+    var d = document.createElement("i"), size = 9 + Math.random() * 17, depth = .25 + Math.random() * 1.1;
+    d.style.width = size + "px"; d.style.height = (size * 1.4) + "px"; d.style.backgroundImage = tones[i % 3]; d.style.opacity = (.4 + depth * .4).toFixed(2);
     if (depth > 1) d.style.filter = "blur(1.5px)";
-    dotsBox.appendChild(d); dots.push({ el: d, x: Math.random(), y: Math.random(), depth: depth });
+    dotsBox.appendChild(d); dots.push({ el: d, x: Math.random(), y: Math.random(), depth: depth, rot: Math.random() * 360, spin: (Math.random() < .5 ? -1 : 1) * (.03 + Math.random() * .05) });
   }
 
   // ----- nos Ices, a cor de cada sabor tinge o brilho do fundo -----
@@ -469,11 +475,10 @@ var MENU = [
 
   var H = stage.clientHeight || window.innerHeight, W2 = stage.clientWidth || window.innerWidth;
   function moveDots() {
-    if (reduce) return;
-    var sy = window.scrollY;
+    var sy = reduce ? 0 : window.scrollY;
     for (var z = 0; z < dots.length; z++) {
       var p = dots[z], y = (((p.y * H - sy * p.depth * 0.35) % (H + 40)) + (H + 40)) % (H + 40) - 20;
-      p.el.style.transform = "translate3d(" + (p.x * W2 + Math.sin(sy * 0.002 * p.depth + z) * 14).toFixed(1) + "px," + y.toFixed(1) + "px,0)";
+      p.el.style.transform = "translate3d(" + (p.x * W2 + Math.sin(sy * 0.002 * p.depth + z) * 14).toFixed(1) + "px," + y.toFixed(1) + "px,0) rotate(" + (p.rot + sy * p.spin).toFixed(1) + "deg)";
     }
   }
   function loop() {
