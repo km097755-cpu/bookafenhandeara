@@ -1,27 +1,27 @@
-# Bookafé: site da taça de Ice Ninho
+# Bookafé: cardápio que reage à rolagem
 
-Atualizado em 11/11/2026 (versão 3).
+Atualizado em 12/11/2026 (versão 4: a taça de Ice Ninho saiu, a logo do Bookafé entrou no lugar).
 
-Página única (`index.html` + pasta `fotos`). Conforme a pessoa rola, a taça de Ice Ninho se abre em seis partes. Cada parte é um grupo do cardápio e, dentro dele, a rolagem passa item por item (nome, preço e descrição em destaque).
+Página única (`index.html` + pasta `fotos`). A logo (`fotos/logo-bookafe.png`, recortada da imagem enviada em 12/11, cantos transparentes) fica no centro. Conforme a pessoa rola, o cardápio aparece em seis grupos e, dentro de cada um, a rolagem passa item por item (nome, preço e descrição em destaque). A taça antiga está guardada no commit anterior do repo GitHub.
 
 ## Fonte do conteúdo
 PDF `Cardapio_Bookafe_A4.pdf` (duas páginas, enviadas como imagem em 11/11/2026): 26 produtos com descrição e preço. Fotos recortadas dessas imagens (baixa resolução). A lista fica no começo do script (`MENU`): é só editar lá para mudar item, preço ou descrição.
 
-## Partes da taça
-Cereja = Adicionais · Chantilly = Para completar · Bolas de sorvete = Ices · Taça = Cafés · Haste = Cappuccinos · Base = Chocolates.
+## Grupos
+Adicionais · Para completar · Ices · Cafés · Cappuccinos · Chocolates (etiquetas: Para o seu Ice, Geladas, Quentes).
 
 ## O que reage à rolagem e ao mouse
 - Cada grupo dura mais ou menos rolagem conforme o número de itens (Ices, com 10, dura mais).
 - O item ativo aparece grande no cartão; a lista mostra todos, o ativo aceso. No celular, o cartão mostra o item ativo e bolinhas de progresso.
-- Nos Ices, as três bolas de sorvete mudam de cor: a do meio é o sabor do item ativo e as laterais são os vizinhos.
+- A logo vai para o lado oposto ao cartão (no celular fica em cima) e vira meia volta a cada troca de grupo; frente e verso são a mesma imagem, então nunca aparece espelhada. Na abertura e no fim volta ao centro.
+- Nos Ices, a cor de cada sabor tinge o brilho do fundo.
 - Passar o mouse (ou focar com Tab) num item da lista mostra esse item em destaque.
 - A rolagem nunca é presa. Pontos laterais levam direto a cada grupo.
+- Foto do cartão (Ices, Cafés, Cappuccinos, Chocolates) tem lupa: clique no PC ou toque no celular abre a foto grande (`<dialog class="zoom">`, função `openZoom`). Fecha com toque/clique em qualquer lugar, no X ou com Esc; a página não rola enquanto está aberta. As fotos atuais são pequenas (~250 px), então ampliadas ficam um pouco borradas: trocar por originais melhora.
 
 ## Antes de publicar
-- Trocar `WHATSAPP_NUMBER` no início do script (hoje `5500000000000`, exemplo).
+- WhatsApp: (17) 98113-1409 (`WHATSAPP_NUMBER = "5517981131409"`).
 - Itens sem "P" aparecem só com "G" porque no PDF o preço está na coluna Grande: conferir.
 - Fotos originais melhores no lugar dos recortes.
 - Fontes do Google Fonts (precisa de internet).
 
-## Testar
-`node C:\Users\User\.claude\skills\scroll-craft\scripts\serve.mjs --root "C:\Users\User\Projetos I\bookafe-ice-ninho" --port 4500`, abrir http://localhost:4500 (ou abrir o `index.html` direto no Chrome).
